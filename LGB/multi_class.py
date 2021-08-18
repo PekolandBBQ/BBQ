@@ -10,7 +10,7 @@ import seaborn as sns
 import gc
 
 ## load data
-data = pd.read_csv('LGB/data/labelresult1.csv')#读取数据
+data = pd.read_csv('../data/labelresult1.csv')#读取数据
 # print(data.columns)
 
 del_lable = ['label']
