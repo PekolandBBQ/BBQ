@@ -9,8 +9,8 @@ import seaborn as sns
 import gc
 
 ## load data
-train_data = pd.read_csv('LGB/data/train.csv')
-test_data = pd.read_csv('LGB/data/test.csv')
+train_data = pd.read_csv('../../data/train.csv')
+test_data = pd.read_csv('../../data/test.csv')
 num_round = 1000
 
 ## category feature one_hot
