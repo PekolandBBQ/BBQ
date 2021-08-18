@@ -8,7 +8,7 @@ import seaborn as sns
 import gc
 
 ## load data
-train_data = pd.read_csv('LGB/data/train.csv')
+train_data = pd.read_csv('LGB/data/train.csv')#读取训练集
 test_data = pd.read_csv('LGB/data/test.csv')
 num_round = 1000
 
