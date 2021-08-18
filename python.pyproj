@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{983ebf4e-f028-4231-9aff-e3b3218ca753}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>EXCEL copy 2.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="EXCEL copy 2.py" />
+    <Compile Include="EXCEL copy.py" />
+    <Compile Include="EXCEL.py" />
+    <Compile Include="LGB\multi_class.py" />
+    <Compile Include="LGB\multi_class_custom_feval.py" />
+    <Compile Include="LGB\multi_class_weight_loss.py" />
+    <Compile Include="LGB\regression.py" />
+    <Compile Include="test.py" />
+    <Compile Include="Untitled-2.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="LGB" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+</Project>

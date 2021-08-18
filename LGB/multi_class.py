@@ -21,9 +21,9 @@ X_data = data[features]
 y_data = data['label'].astype(int)
 # print(y_data)
 xtrain,xtest,ytrain,ytest=train_test_split(X_data,y_data,train_size=0.85,random_state=2021)
-train=pd.concat([xtrain,ytrain])
-test=pd.concat([xtest,ytest])
-# print(xtrain.shape,xtest.shape,ytrain.shape,ytest.shape)
+train=pd.concat([xtrain,ytrain],axis=1)
+test=pd.concat([xtest,ytest],axis=1)
+print(xtrain.shape,xtest.shape,ytrain.shape,ytest.shape,train.shape,test.shape)
 
 num_round = 1000
 
@@ -62,13 +62,14 @@ params = {'num_leaves': 60,
           "nthread": 15,
           'metric': 'multi_logloss',
           "random_state": 2021,
-          # 'device': 'gpu' 
+        #   'metric': 'auc_mu'
+        #   'device': 'gpu' 
           }
 
-
+evals_result = {}#结果可视化
 folds = KFold(n_splits=5, shuffle=True, random_state=2019)
 prob_oof = np.zeros((xtrain.shape[0], 49))
-test_pred_prob = np.zeros((xtest.shape[0], 49))
+test_pred_prob = np.zeros((test.shape[0], 49))
 
 ## train and predict
 feature_importance_df = pd.DataFrame()
@@ -82,6 +83,7 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(train)):
                     num_round,
                     valid_sets=[trn_data, val_data],
                     verbose_eval=20,
+                    evals_result=evals_result,
                     categorical_feature=cate_feature,
                     early_stopping_rounds=60)
     prob_oof[val_idx] = clf.predict(xtrain.iloc[val_idx], num_iteration=clf.best_iteration)
@@ -96,6 +98,10 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(train)):
     test_pred_prob += clf.predict(test[features], num_iteration=clf.best_iteration) / folds.n_splits
 result = np.argmax(test_pred_prob, axis=1)
 
+## plot process
+ax = lgb.plot_metric(evals_result, metric=params['metric'])#metric的值与之前的params里面的值对应
+plt.show()
+plt.savefig('LGB/result/lgb_process.png')
 ## plot feature importance
 cols = (feature_importance_df[["Feature", "importance"]].groupby("Feature").mean().sort_values(by="importance", ascending=False).index)
 best_features = feature_importance_df.loc[feature_importance_df.Feature.isin(cols)].sort_values(by='importance',ascending=False)
@@ -105,4 +111,4 @@ sns.barplot(y="Feature",
             data=best_features.sort_values(by="importance", ascending=False))
 plt.title('LightGBM Features (avg over folds)')
 plt.tight_layout()
-plt.savefig('../../result/lgb_importances.png')
+plt.savefig('LGB/result/lgb_importances.png')
