@@ -11,7 +11,7 @@ import gc
 
 ## load data
 data = pd.read_csv('LGB/data/labelresult1.csv')#读取数据
-# print(data.columns)
+# print(data.columns)1
 
 del_lable = ['label']
 features = [i for i in data.columns if i not in del_lable]
