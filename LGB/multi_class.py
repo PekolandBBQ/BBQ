@@ -7,17 +7,17 @@ from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.metrics import *
+from sklearn.preprocessing import label_binarize
+
 import gc
 
 ## load data
-<<<<<<< HEAD
-data = pd.read_csv('LGB/data/labelresult1.csv')#读取数据
-# print(data.columns)
-=======
-data = pd.read_csv('../data/labelresult1.csv')#读取数据
+data = pd.read_csv('labelresultunder.csv')#读取数据
 # print(data.columns)1
->>>>>>> 204c4862b497ff1f411c48fc208c5e9cf34eff9d
 
+data['label']=data['label']-1
+# print(data['label'])
 del_lable = ['label']
 features = [i for i in data.columns if i not in del_lable]
 cate_feature = features
@@ -26,15 +26,9 @@ X_data = data[features]
 y_data = data['label'].astype(int)
 # print(y_data)
 xtrain,xtest,ytrain,ytest=train_test_split(X_data,y_data,train_size=0.85,random_state=2021)
-<<<<<<< HEAD
-train=pd.concat([xtrain,ytrain])
-test=pd.concat([xtest,ytest])
-# print(xtrain.shape,xtest.shape,ytrain.shape,ytest.shape)
-=======
 train=pd.concat([xtrain,ytrain],axis=1)
 test=pd.concat([xtest,ytest],axis=1)
 print(xtrain.shape,xtest.shape,ytrain.shape,ytest.shape,train.shape,test.shape)
->>>>>>> 204c4862b497ff1f411c48fc208c5e9cf34eff9d
 
 num_round = 1000
 
@@ -59,7 +53,7 @@ gc.collect()
 params = {'num_leaves': 60,
           'min_data_in_leaf': 30,
           'objective': 'multiclass',
-          'num_class':49,#类别数
+          'num_class':5,#类别数
           'max_depth': -1,
           'learning_rate': 0.03,
           "min_sum_hessian_in_leaf": 6,
@@ -73,22 +67,13 @@ params = {'num_leaves': 60,
           "nthread": 15,
           'metric': 'multi_logloss',
           "random_state": 2021,
-<<<<<<< HEAD
-          # 'device': 'gpu' 
-=======
-        #   'metric': 'auc_mu'
-        #   'device': 'gpu' 
->>>>>>> 204c4862b497ff1f411c48fc208c5e9cf34eff9d
+
           }
 
 evals_result = {}#结果可视化
 folds = KFold(n_splits=5, shuffle=True, random_state=2019)
-prob_oof = np.zeros((xtrain.shape[0], 49))
-<<<<<<< HEAD
-test_pred_prob = np.zeros((xtest.shape[0], 49))
-=======
-test_pred_prob = np.zeros((test.shape[0], 49))
->>>>>>> 204c4862b497ff1f411c48fc208c5e9cf34eff9d
+prob_oof = np.zeros((xtrain.shape[0], 5))
+test_pred_prob = np.zeros((test.shape[0], 5))
 
 ## train and predict
 feature_importance_df = pd.DataFrame()
@@ -120,7 +105,25 @@ result = np.argmax(test_pred_prob, axis=1)
 ## plot process
 ax = lgb.plot_metric(evals_result, metric=params['metric'])#metric的值与之前的params里面的值对应
 plt.show()
-plt.savefig('LGB/result/lgb_process.png')
+
+#准确率
+y_pred_pa = clf.predict(xtest)  # !!!注意lgm预测的是分数，类似 sklearn的predict_proba
+y_test_oh = label_binarize(ytest, classes= [0,1,2,3,4])
+print ('准确率：', roc_auc_score(y_test_oh, y_pred_pa, average='micro'))
+
+#  2、混淆矩阵
+y_pred = y_pred_pa.argmax(axis=1)
+print(confusion_matrix(ytest, y_pred))
+
+#  3、经典-精确率、召回率、F1分数
+print('精确率:',precision_score(ytest, y_pred,average='micro'))
+print('召回率：',recall_score(ytest, y_pred,average='micro'))
+print('F1：',f1_score(ytest, y_pred,average='micro'))
+
+# 4、模型报告
+print(classification_report(ytest, y_pred))
+
+
 ## plot feature importance
 cols = (feature_importance_df[["Feature", "importance"]].groupby("Feature").mean().sort_values(by="importance", ascending=False).index)
 best_features = feature_importance_df.loc[feature_importance_df.Feature.isin(cols)].sort_values(by='importance',ascending=False)
