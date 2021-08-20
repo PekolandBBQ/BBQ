@@ -7,14 +7,17 @@ from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import seaborn as sns
+import joblib
 from sklearn.metrics import *
 from sklearn.preprocessing import label_binarize
 
 import gc
 
 ## load data
-data = pd.read_csv('labelresultunder.csv')#读取数据
+data = pd.read_csv('../data/labelresult1.csv')#读取数据
 # print(data.columns)1
+
+#数据处理
 
 data['label']=data['label']-1
 # print(data['label'])
@@ -48,7 +51,7 @@ gc.collect()
 
 ## get train feature
 
-
+#参数设定
 
 params = {'num_leaves': 60,
           'min_data_in_leaf': 30,
@@ -75,7 +78,7 @@ folds = KFold(n_splits=5, shuffle=True, random_state=2019)
 prob_oof = np.zeros((xtrain.shape[0], 5))
 test_pred_prob = np.zeros((test.shape[0], 5))
 
-## train and predict
+## 训练
 feature_importance_df = pd.DataFrame()
 for fold_, (trn_idx, val_idx) in enumerate(folds.split(train)):
     print("fold {}".format(fold_ + 1))
@@ -102,13 +105,17 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(train)):
     test_pred_prob += clf.predict(test[features], num_iteration=clf.best_iteration) / folds.n_splits
 result = np.argmax(test_pred_prob, axis=1)
 
-## plot process
+
+#测试：
+
+
+## 对数损失
 ax = lgb.plot_metric(evals_result, metric=params['metric'])#metric的值与之前的params里面的值对应
 plt.show()
 
 #准确率
-y_pred_pa = clf.predict(xtest)  # !!!注意lgm预测的是分数，类似 sklearn的predict_proba
-y_test_oh = label_binarize(ytest, classes= [0,1,2,3,4])
+y_pred_pa = clf.predict(xtest)  # 预测结果为分数
+y_test_oh = label_binarize(ytest, classes= [0,1,2,3,4])#标签二值化
 print ('准确率：', roc_auc_score(y_test_oh, y_pred_pa, average='micro'))
 
 #  2、混淆矩阵
@@ -123,8 +130,10 @@ print('F1：',f1_score(ytest, y_pred,average='micro'))
 # 4、模型报告
 print(classification_report(ytest, y_pred))
 
+# 5、保存模型
+joblib.dump(clf,'LGB/model/model.pkl')
 
-## plot feature importance
+## 特征重要率
 cols = (feature_importance_df[["Feature", "importance"]].groupby("Feature").mean().sort_values(by="importance", ascending=False).index)
 best_features = feature_importance_df.loc[feature_importance_df.Feature.isin(cols)].sort_values(by='importance',ascending=False)
 plt.figure(figsize=(8, 10))
