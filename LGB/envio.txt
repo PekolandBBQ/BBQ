@@ -1,0 +1,11 @@
+环境名称：bhg_95598工单提及等级预测
+
+镜像用途：
+
+算法：lightGBM
+
+支持语言：英文
+
+依赖包/组件：lightgbm/pandas/numpy/sklearn/matplotlib.pyplot/seaborn/joblib
+
+标签：多分类，lightGBM

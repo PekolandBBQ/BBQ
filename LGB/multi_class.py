@@ -10,11 +10,13 @@ import seaborn as sns
 import joblib
 from sklearn.metrics import *
 from sklearn.preprocessing import label_binarize
-
+import time
 import gc
 
 ## load data
-data = pd.read_csv('../data/labelresult1.csv')#读取数据
+data = pd.read_csv('labelresultunder.csv')#读取数据
+
+test5=pd.read_csv('test5.csv')
 # print(data.columns)1
 
 #数据处理
@@ -105,16 +107,16 @@ for fold_, (trn_idx, val_idx) in enumerate(folds.split(train)):
     test_pred_prob += clf.predict(test[features], num_iteration=clf.best_iteration) / folds.n_splits
 result = np.argmax(test_pred_prob, axis=1)
 
-
 #测试：
 
 
 ## 对数损失
 ax = lgb.plot_metric(evals_result, metric=params['metric'])#metric的值与之前的params里面的值对应
-plt.show()
+# plt.show()
 
 #准确率
 y_pred_pa = clf.predict(xtest)  # 预测结果为分数
+result=np.argmax(y_pred_pa,axis=1)
 y_test_oh = label_binarize(ytest, classes= [0,1,2,3,4])#标签二值化
 print ('准确率：', roc_auc_score(y_test_oh, y_pred_pa, average='micro'))
 
@@ -131,8 +133,15 @@ print('F1：',f1_score(ytest, y_pred,average='micro'))
 print(classification_report(ytest, y_pred))
 
 # 5、保存模型
-joblib.dump(clf,'LGB/model/model.pkl')
+now=time.strftime("model_%Y%m%d%H%M%S", time.localtime())
+savemodel='LGB/model/'+now+'.pkl'
+joblib.dump(clf,savemodel)
 
+# 
+re=np.argmax(clf.predict(test5),axis=1)
+print(re)
+
+#
 ## 特征重要率
 cols = (feature_importance_df[["Feature", "importance"]].groupby("Feature").mean().sort_values(by="importance", ascending=False).index)
 best_features = feature_importance_df.loc[feature_importance_df.Feature.isin(cols)].sort_values(by='importance',ascending=False)
