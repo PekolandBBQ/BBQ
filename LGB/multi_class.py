@@ -16,7 +16,7 @@ import gc
 ## load data
 data = pd.read_csv('labelresultunder.csv')#读取数据
 
-test5=pd.read_csv('test5.csv')
+# test5=pd.read_csv('test5.csv')
 # print(data.columns)1
 
 #数据处理
@@ -138,8 +138,8 @@ savemodel='LGB/model/'+now+'.pkl'
 joblib.dump(clf,savemodel)
 
 # 
-re=np.argmax(clf.predict(test5),axis=1)
-print(re)
+# re=np.argmax(clf.predict(test5),axis=1)
+# print(re)
 
 #
 ## 特征重要率
